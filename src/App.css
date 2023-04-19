@@ -1,38 +1,107 @@
-.App {
-  text-align: center;
+body {
+  margin: 0px;
 }
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.container {
   display: flex;
   flex-direction: column;
   align-items: center;
+  background-color: rgb(230, 233, 235);
+  background-size: cover;
+  width: 100vw;
+}
+.cards-container {
+  margin: 10px;
+}
+.camera-card {
+  display: flex;
+  flex-direction: row;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+  align-items: center;
+}
+.webcam {
+  height: 48vh;
+}
+.capture-icon {
+  border-radius: 100px;
+  height: 40px;
+  width: 40px;
+  background-color: red;
+  border: 2px solid white;
+  margin-left: 8px;
+  cursor: pointer;
+}
+.capture-icon:hover {
+  background-color: white;
+  border: 2px solid red;
+}
+.choose-file-container {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+.file-input {
+  border: 2px solid rgb(61, 61, 250);
+  background-color: rgb(61, 61, 245);
   color: white;
 }
-
-.App-link {
-  color: #61dafb;
+.convert-container {
+  display: flex;
+  justify-content: center;
 }
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.convert {
+  margin-top: 10px;
+  border-radius: 10px;
+  height: 30px;
+  width: 80px;
+  border-style: none;
+  font-size: 15px;
+  background-color: rgb(79, 79, 243);
+  color: white;
+  cursor: pointer;
+}
+.convert:hover {
+  background-color: rgb(47, 47, 240);
+}
+.button {
+  margin-top: 10px;
+  border-radius: 10px;
+  height: 30px;
+  width: 180px;
+  border-style: none;
+  font-size: 15px;
+  background-color: rgb(42, 194, 54);
+  color: white;
+  cursor: pointer;
+}
+.button:hover {
+  background-color: rgb(3, 143, 22);
+}
+.input-label {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.units-input {
+  border-radius: 10px;
+  text-align: center;
+  margin-left: 10px;
+  border-style: none;
+  height: 30px;
+}
+.bill-details {
+  background-color: aquamarine;
+  padding: 20px;
+  border-radius: 10px;
+  margin-top: 10px;
+  list-style: none;
+}
+.span {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  text-align: center;
+}
+.li-elements {
+  display: flex;
+  justify-content: space-between;
+  margin: 15px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 600;
 }
