@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import Webcam from "react-webcam";
 import Tesseract from "tesseract.js";
+import { GrPowerReset } from "react-icons/gr";
 
 import "./App.css";
 
@@ -11,6 +12,7 @@ let EDINT = 0;
 let addlCharges = 0;
 let surCharges = 0;
 let INT = 0;
+let billAmount = 0;
 let lossGain = 0;
 let netAmount = 0;
 
@@ -20,11 +22,18 @@ const App = () => {
   const [image, setImage] = useState("");
   const [units, setUnits] = useState("");
   const [progress, setProgress] = useState(0);
-  const [billAmount, setBillAmount] = useState(0);
+  const [energyCharges, setEnergyCharges] = useState(0);
+  const [showPicture, setShowPicture] = useState(false);
 
   const capture = () => {
     const image = webcamRef.current.getScreenshot();
     setImage(image);
+    setShowPicture(true);
+  };
+
+  const handleRetake = () => {
+    setImage("");
+    setShowPicture(false);
   };
 
   const handleSubmit = () => {
@@ -50,7 +59,7 @@ const App = () => {
   const calculateBillAmount = () => {
     let amount = 0;
     if (units <= 100) {
-      amount = units <= 50 ? units * 1.95 : 50 * 1.95 + (units - 50) * 3.1;
+      amount = units <= 50 ? (amount = 50) : 50 * 1.95 + (units - 50) * 3.1;
     } else if (units <= 200) {
       amount = 100 * 3.4 + (units - 100) * 4.8;
     } else {
@@ -65,8 +74,29 @@ const App = () => {
         amount += 100 * 7.7 + 100 * 9.0 + 400 * 9.5 + (units - 800) * 10.0;
       }
     }
-    setBillAmount(amount.toFixed(2));
-    fixedCharges = amount + 10;
+    setEnergyCharges(amount.toFixed(2));
+    if (units <= 50) {
+      custCharges = 40.0;
+    } else if (units <= 100) {
+      custCharges = 70.0;
+    } else if (units <= 200) {
+      custCharges = 90.0;
+    } else if (units <= 300) {
+      custCharges = 100.0;
+    } else if (units <= 400) {
+      custCharges = 120.0;
+    } else if (units <= 800) {
+      custCharges = 140.0;
+    } else {
+      custCharges = 160.0;
+    }
+    fixedCharges = 10.0;
+    elecDuties = units * (6 / 100);
+    elecDuties = elecDuties.toFixed(2);
+    billAmount = amount + fixedCharges + custCharges + parseFloat(elecDuties);
+    netAmount = Math.round(billAmount);
+    lossGain = billAmount - netAmount;
+    lossGain = lossGain.toFixed(2);
   };
 
   return (
@@ -75,23 +105,39 @@ const App = () => {
         <div className="col-md-5 mx-auto h-100 d-flex flex-column justify-content-center">
           {!isLoading && (
             <div className="camera-card">
-              <Webcam className="webcam" audio={false} ref={webcamRef} />
-              <div>
+              {!showPicture ? (
+                <Webcam
+                  className="webcam"
+                  audio={false}
+                  ref={webcamRef}
+                  videoConstraints={{
+                    facingMode: "environment",
+                  }}
+                />
+              ) : (
+                <img src={image} alt="captured pic" />
+              )}
+              <div className="capture-reset">
                 <button
                   className="capture-icon"
                   type="button"
                   onClick={capture}
                 ></button>
+                <GrPowerReset
+                  className="reset"
+                  type="button"
+                  onClick={handleRetake}
+                />
               </div>
             </div>
           )}
           {isLoading && (
-            <>
-              <progress className="form-control" value={progress} max="100">
+            <div>
+              <progress className="progress" value={progress} max="100">
                 {progress}%{" "}
-              </progress>{" "}
-              <p className="text-center py-0 my-0">Converting:- {progress} %</p>
-            </>
+              </progress>
+              <p>{progress} %</p>
+            </div>
           )}
           {!isLoading && !units && (
             <div className="choose-file-container">
@@ -113,26 +159,25 @@ const App = () => {
             </div>
           )}
           {!isLoading && units && (
-            <>
+            <div className="convert-container">
               <textarea
-                className="form-control w-100 mt-5"
+                className="textarea"
                 rows="2"
                 value={units}
                 onChange={(e) => setUnits(e.target.value)}
               ></textarea>
-            </>
+            </div>
           )}
           <div>
-            <label className="input-label" htmlFor="units">
-              Enter units consumed:
-            </label>
-            <input
-              className="units-input"
-              type="number"
-              id="units"
-              value={units}
-              onChange={(e) => setUnits(e.target.value)}
-            />
+            <div className="convert-container">
+              <input
+                className="units-input"
+                type="number"
+                id="units"
+                value={units}
+                onChange={(e) => setUnits(e.target.value)}
+              />
+            </div>
             <div className="convert-container">
               <button className="button" onClick={calculateBillAmount}>
                 Calculate Bill Amount
@@ -140,7 +185,7 @@ const App = () => {
             </div>
             <ul className="bill-details">
               <li className="li-elements">
-                Energy charges: <span className="span">{billAmount}</span>
+                Energy charges: <span className="span">{energyCharges}</span>
               </li>
               <li className="li-elements">
                 Fixed Charges: <span className="span">{fixedCharges}</span>
@@ -164,13 +209,18 @@ const App = () => {
                 INT on SD: <span className="span">{INT}</span>
               </li>
               <li className="li-elements">
+                Bill Amount: <span className="span">{billAmount}</span>{" "}
+              </li>
+              <li className="li-elements">
                 Loss/Gain: <span className="span">{lossGain}</span>
               </li>
               <li className="li-elements">
                 Net Amount: <span className="span">{netAmount}</span>{" "}
               </li>
             </ul>
-            <h1>Total Amount: </h1>
+            <div className="total-bill">
+              <h1>Total Amount: {netAmount} </h1>
+            </div>
           </div>
         </div>
       </div>
